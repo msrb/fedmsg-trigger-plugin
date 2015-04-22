@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+  Plugin for triggering builds via Fedmsg messages.
+</div>
