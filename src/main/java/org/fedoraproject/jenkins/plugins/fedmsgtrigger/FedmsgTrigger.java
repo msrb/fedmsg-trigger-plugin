@@ -122,6 +122,8 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
         }
 
         public void addTrigger(FedmsgTrigger trigger) {
+            // TODO: error/failure handling! this will need to be rewritten...
+
             synchronized (listeners) {
                 FedmsgListener listener = listeners.get(trigger.getHubAddr());
                 if (listener == null) {
