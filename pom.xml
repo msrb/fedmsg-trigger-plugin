@@ -31,8 +31,8 @@
 
   <scm>
     <connection>scm:git:ssh://github.com/jenkinsci/fedmsg-trigger.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/fedmsg-trigger.git</developerConnection>
-    <url>https://github.com/jenkinsci/fedmsg-trigger</url>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/fedmsg-trigger-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/fedmsg-trigger-plugin</url>
   </scm>
 
   <developers>
