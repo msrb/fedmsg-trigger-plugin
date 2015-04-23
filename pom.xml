@@ -15,7 +15,7 @@
 
   <name>Fedmsg Trigger Plugin</name>
   <description>Jenkins plugin for triggering builds via Fedmsg messages</description>
-  <url>http://wiki.jenkins-ci.org/display/JENKINS/Fedmsg+Trigger</url>
+  <url>http://wiki.jenkins-ci.org/display/JENKINS/Fedmsg+Trigger+Plugin</url>
 
   <properties>
     <jeromq.version>0.3.4</jeromq.version>
@@ -30,7 +30,7 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/fedmsg-trigger.git</connection>
+    <connection>scm:git:ssh://github.com/jenkinsci/fedmsg-trigger-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/fedmsg-trigger-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/fedmsg-trigger-plugin</url>
   </scm>
