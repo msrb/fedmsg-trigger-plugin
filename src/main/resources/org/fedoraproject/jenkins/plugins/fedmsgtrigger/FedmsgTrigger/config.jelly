@@ -7,7 +7,7 @@
     <f:textbox />
   </f:entry>
     <f:entry>
-      <f:repeatable var="check" name="checks" items="${instance.checks}" add="Add check">
+      <f:repeatable var="check" name="checks" items="${instance.checks}" add="${%Add check}">
         <table width="100%">
           <f:entry title="${%Field}">
             <f:textbox name="checks.field" value="${check.field}" />
