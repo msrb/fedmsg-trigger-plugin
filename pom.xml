@@ -19,7 +19,7 @@
 
   <properties>
     <jeromq.version>0.3.4</jeromq.version>
-    <jackson.version>2.5.1</jackson.version>
+    <jackson.version>2.5.2</jackson.version>
   </properties>
 
   <licenses>
