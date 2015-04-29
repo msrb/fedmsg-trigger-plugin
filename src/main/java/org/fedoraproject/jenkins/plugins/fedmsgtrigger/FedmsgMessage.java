@@ -28,7 +28,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-/* package */ class FedmsgMessage {
+/* package */class FedmsgMessage {
 
     private double timestamp;
     private String topic;

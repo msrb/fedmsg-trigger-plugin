@@ -38,14 +38,20 @@ public class MsgCheck {
         this.expectedValue = expectedValue;
     }
 
+    /**
+     * Check whether given message conforms to the constrain defined in this
+     * object.
+     *
+     * @param message message to check
+     * @return true if all checks pass, false otherwise
+     */
     public boolean check(FedmsgMessage message) {
-        // TODO: utilize Jackson's tree model here
         Map<String, Object> msg = message.getMsg();
         if (msg == null) {
             return false;
         }
 
-        if (expectedValue.equals(msg.get(field))) {
+        if (expectedValue.equals(msg.get(field).toString())) {
             return true;
         }
 
