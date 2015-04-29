@@ -10,7 +10,8 @@
       <f:repeatable var="check" name="checks" items="${instance.checks}" add="${%Add check}">
         <table width="100%">
           <f:entry title="${%Field}">
-            <f:textbox name="checks.field" value="${check.field}" />
+            <f:textbox name="checks.field" value="${check.field}"
+                       checkUrl="'descriptorByName/org.fedoraproject.jenkins.plugins.fedmsgtrigger.FedmsgTrigger/checkField?value='+escape(this.value)" />
           </f:entry>
           <f:entry title="${%Expected value}">
             <f:textbox name="checks.expectedValue" value="${check.expectedValue}" />

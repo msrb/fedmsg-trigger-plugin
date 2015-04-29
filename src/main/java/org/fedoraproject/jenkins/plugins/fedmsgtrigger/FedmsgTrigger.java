@@ -24,6 +24,7 @@
 package org.fedoraproject.jenkins.plugins.fedmsgtrigger;
 
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.triggers.Trigger;
@@ -129,10 +130,28 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
         }
 
         public FormValidation doCheckTopic(@QueryParameter String value) {
-            if (!value.isEmpty()) {
-                return FormValidation.ok();
+            String topic = Util.fixEmptyAndTrim(value);
+            if (topic == null) {
+                return FormValidation.error("Topic cannot be empty");
             }
-            return FormValidation.error("Topic cannot be empty");
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckHubAddr(@QueryParameter String value) {
+            // TODO: regexp or commons-validator
+            String hubAddr = Util.fixEmptyAndTrim(value);
+            if (hubAddr == null) {
+                return FormValidation.error("Not a valid URL");
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckField(@QueryParameter String value) {
+            String field = Util.fixEmptyAndTrim(value);
+            if (field == null) {
+                return FormValidation.error("Field cannot be empty");
+            }
+            return FormValidation.ok();
         }
 
         public void addTrigger(FedmsgTrigger trigger) {
