@@ -82,12 +82,17 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
     @Override
     public void start(BuildableItem project, boolean newInstance) {
         this.project = project;
-        ((DescriptorImpl) getDescriptor()).addTrigger(this);
+        getDescriptor().addTrigger(this);
     }
 
     @Override
     public void stop() {
-        ((DescriptorImpl) getDescriptor()).deleteTrigger(this);
+        getDescriptor().removeTrigger(this);
+    }
+
+    @Override
+    public DescriptorImpl getDescriptor() {
+        return (DescriptorImpl) super.getDescriptor();
     }
 
     public void run(FedmsgMessage msg) {
@@ -99,7 +104,7 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
 
         private static final Logger LOGGER = Logger.getLogger(DescriptorImpl.class.getName());
 
-        private Map<String, FedmsgListener> listeners = new HashMap<String, FedmsgListener>();
+        private Map<String, FedmsgSubscriber> subscribers = new HashMap<String, FedmsgSubscriber>();
 
         public DescriptorImpl() {
             load();
@@ -122,47 +127,49 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
         }
 
         public void addTrigger(FedmsgTrigger trigger) {
-            // TODO: error/failure handling! this will need to be rewritten...
+            synchronized (subscribers) {
+                FedmsgSubscriber subscriber = subscribers.get(trigger.getHubAddr());
 
-            synchronized (listeners) {
-                FedmsgListener listener = listeners.get(trigger.getHubAddr());
-                if (listener == null) {
-                    listener = new FedmsgTrigger.FedmsgListener(trigger.getHubAddr());
-                    listeners.put(trigger.getHubAddr(), listener);
-                    Thread thread = new Thread(listener, trigger.getHubAddr());
+                if (subscriber == null) {
+                    subscriber = new FedmsgTrigger.FedmsgSubscriber(trigger.getHubAddr());
+                    subscribers.put(trigger.getHubAddr(), subscriber);
+                    Thread thread = new Thread(subscriber, trigger.getHubAddr());
                     thread.start();
                 }
-                listener.addConsumer(trigger);
+
+                subscriber.addConsumer(trigger);
             }
         }
 
-        public void deleteTrigger(FedmsgTrigger trigger) {
-            synchronized (listeners) {
-                FedmsgListener listener = listeners.get(trigger.getHubAddr());
-                if (listener == null) {
-                    LOGGER.warning("Trying to remove non-existent listener for " + trigger.getHubAddr());
+        public void removeTrigger(FedmsgTrigger trigger) {
+            synchronized (subscribers) {
+                FedmsgSubscriber subscriber = subscribers.get(trigger.getHubAddr());
+                if (subscriber == null) {
+                    LOGGER.warning("Trying to remove non-existent subscriber for " + trigger.getHubAddr());
                     return;
+                } else {
+                    subscriber.removeConsumer(trigger);
                 }
-                listener.deleteConsumer(trigger);
 
-                if (!listener.hasConsumers()) {
-                    listeners.remove(trigger.getHubAddr());
-                    listener.stop();
+                if (!subscriber.hasConsumers()) {
+                    subscribers.remove(trigger.getHubAddr());
+                    subscriber.stop();
                 }
             }
         }
     }
 
-    private static class FedmsgListener implements Runnable {
+    private static class FedmsgSubscriber implements Runnable {
 
         private Context ctx;
         private Socket subscriber;
 
-        private static final Logger LOGGER = Logger.getLogger(FedmsgListener.class.getName());
+        private static final Logger LOGGER = Logger.getLogger(FedmsgSubscriber.class.getName());
 
         private List<FedmsgTrigger> consumers = Collections.synchronizedList(new ArrayList<FedmsgTrigger>());
+        private Map<String, List<FedmsgTrigger>> topics = new HashMap<String, List<FedmsgTrigger>>();
 
-        public FedmsgListener(String hubAddr) {
+        public FedmsgSubscriber(String hubAddr) {
             this.ctx = ZMQ.context(1);
             this.subscriber = ctx.socket(ZMQ.SUB);
 
@@ -177,7 +184,7 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
             }
         }
 
-        public void deleteConsumer(FedmsgTrigger consumer) {
+        public void removeConsumer(FedmsgTrigger consumer) {
             synchronized (consumers) {
                 boolean unsubscribe = true;
                 for (FedmsgTrigger trigger : consumers) {
