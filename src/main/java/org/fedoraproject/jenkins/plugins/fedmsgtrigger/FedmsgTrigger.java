@@ -159,7 +159,13 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
                 FedmsgSubscriber subscriber = subscribers.get(trigger.getHubAddr());
 
                 if (subscriber == null) {
-                    subscriber = new FedmsgTrigger.FedmsgSubscriber(trigger.getHubAddr());
+
+                    try {
+                        subscriber = new FedmsgTrigger.FedmsgSubscriber(trigger.getHubAddr());
+                    } catch (IllegalArgumentException e) {
+                        LOGGER.warning("Unable to connect to \"" + trigger.getHubAddr() + "\": " + e.toString());
+                        return;
+                    }
                     subscribers.put(trigger.getHubAddr(), subscriber);
                     Thread thread = new Thread(subscriber, trigger.getHubAddr());
                     thread.start();
@@ -198,6 +204,9 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
         private Map<String, List<FedmsgTrigger>> topics = new HashMap<String, List<FedmsgTrigger>>();
 
         public FedmsgSubscriber(String hubAddr) {
+            if (hubAddr == null || hubAddr.isEmpty()) {
+                throw new IllegalArgumentException("Hub address is empty");
+            }
             this.ctx = ZMQ.context(1);
             this.subscriber = ctx.socket(ZMQ.SUB);
 
