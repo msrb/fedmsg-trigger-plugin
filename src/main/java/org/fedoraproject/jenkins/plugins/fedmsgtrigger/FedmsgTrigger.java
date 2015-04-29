@@ -28,6 +28,7 @@ import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
+import hudson.util.FormValidation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import java.util.logging.Logger;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQ.Context;
@@ -124,6 +126,13 @@ public class FedmsgTrigger extends Trigger<BuildableItem> {
         @Override
         public boolean isApplicable(Item item) {
             return true;
+        }
+
+        public FormValidation doCheckTopic(@QueryParameter String value) {
+            if (!value.isEmpty()) {
+                return FormValidation.ok();
+            }
+            return FormValidation.error("Topic cannot be empty");
         }
 
         public void addTrigger(FedmsgTrigger trigger) {
